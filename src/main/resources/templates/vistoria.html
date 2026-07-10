@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vistoria na Fábrica</title>
+    <style>
+        :root {
+            --color-yellow: #f5c518;
+            --color-yellow-dark: #d9ad0f;
+            --color-gray-dark: #2b2b2b;
+            --color-gray: #4b4b4b;
+            --color-card: #ffffff;
+            --color-text: #1f1f1f;
+            --color-muted: #6b6b6b;
+            --color-border: #e2e2e2;
+            --color-ok: #16a34a;
+            --color-incidente: #dc2626;
+            --radius-card: 20px;
+            --radius-field: 12px;
+            --radius-pill: 999px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            padding: 24px 16px 60px;
+            font-family: "Segoe UI", system-ui, sans-serif;
+            color: var(--color-text);
+            background: linear-gradient(
+                    to bottom,
+                    var(--color-gray-dark) 0%,
+                    var(--color-gray-dark) 45%,
+                    var(--color-yellow) 100%
+            );
+        }
+
+        .container {
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .topbar .logo {
+            height: 48px;
+            width: auto;
+        }
+
+        .topbar h1 {
+            margin: 0;
+            font-size: 1.3rem;
+            color: #ffffff;
+        }
+
+        .card {
+            background: var(--color-card);
+            border-radius: var(--radius-card);
+            padding: 24px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-field);
+            font-size: 1rem;
+            font-family: inherit;
+            color: var(--color-text);
+            background: #fafafa;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--color-yellow-dark);
+            background: var(--color-card);
+        }
+
+        textarea {
+            margin-top: 12px;
+            min-height: 70px;
+            resize: vertical;
+        }
+
+        .setor-card h3 {
+            margin: 0 0 12px 0;
+            font-size: 1.05rem;
+        }
+
+        .status-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .status-chip {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 12px;
+            border: 1.5px solid var(--color-border);
+            border-radius: var(--radius-pill);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .status-chip input {
+            display: none;
+        }
+
+        .status-chip.chip-ok:has(input:checked) {
+            background: var(--color-ok);
+            border-color: var(--color-ok);
+            color: white;
+        }
+
+        .status-chip.chip-incidente:has(input:checked) {
+            background: var(--color-incidente);
+            border-color: var(--color-incidente);
+            color: white;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: var(--radius-pill);
+            background: var(--color-yellow);
+            color: var(--color-gray-dark);
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        button[type="submit"]:hover {
+            background: var(--color-yellow-dark);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <header class="topbar">
+        <img src="/logo.png" alt="Logo da empresa" class="logo" onerror="this.style.display='none'">
+        <h1>Formulário de Vistoria Fábrica</h1>
+    </header>
+
+    <form th:action="@{/vistoria}" th:object="${vistoria}" method="post">
+
+        <div class="card">
+            <label for="responsavel">Responsável</label>
+            <input type="text" id="responsavel" th:field="*{responsavel}" required>
+        </div>
+
+        <div class="card setor-card" th:each="item, stat : *{itens}">
+            <h3 th:text="${item.setor}">Nome do setor</h3>
+            <input type="hidden" th:field="*{itens[__${stat.index}__].setor}">
+
+            <div class="status-group">
+                <label class="status-chip chip-ok">
+                    <input type="radio" th:field="*{itens[__${stat.index}__].status}" value="OK" required>
+                    OK
+                </label>
+                <label class="status-chip chip-incidente">
+                    <input type="radio" th:field="*{itens[__${stat.index}__].status}" value="INCIDENTE">
+                    Incidente
+                </label>
+            </div>
+
+            <textarea th:field="*{itens[__${stat.index}__].observacao}" placeholder="Observação (se houver incidente)"></textarea>
+        </div>
+
+        <button type="submit">Enviar</button>
+    </form>
+</div>
+</body>
+</html>
