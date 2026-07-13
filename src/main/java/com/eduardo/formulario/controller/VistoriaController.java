@@ -4,6 +4,7 @@ import com.eduardo.formulario.model.ItemVistoria;
 import com.eduardo.formulario.model.Vistoria;
 import com.eduardo.formulario.pdf.VistoriaPdfGenerator;
 import com.lowagie.text.DocumentException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -28,9 +33,12 @@ public class VistoriaController {
     );
 
     private final VistoriaPdfGenerator pdfGenerator;
+    private final String pastaDestino;
 
-    public VistoriaController(VistoriaPdfGenerator pdfGenerator) {
+    public VistoriaController(VistoriaPdfGenerator pdfGenerator,
+                               @Value("${vistoria.pdf.pasta-destino}") String pastaDestino) {
         this.pdfGenerator = pdfGenerator;
+        this.pastaDestino = pastaDestino;
     }
 
     @GetMapping("/vistoria")
@@ -45,9 +53,22 @@ public class VistoriaController {
     public ResponseEntity<byte[]> receberFormulario(@ModelAttribute Vistoria vistoria) throws DocumentException, IOException {
         byte[] pdf = pdfGenerator.gerar(vistoria);
 
+        String nomeArquivo = nomeArquivo(vistoria);
+        Files.createDirectories(Path.of(pastaDestino));
+        Files.write(Path.of(pastaDestino, nomeArquivo), pdf);
+
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=vistoria.pdf")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + nomeArquivo)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdf);
+    }
+
+    private String nomeArquivo(Vistoria vistoria) {
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+        String responsavel = vistoria.getResponsavel() == null ? "" : vistoria.getResponsavel();
+        String responsavelLimpo = responsavel.trim().replaceAll("[^a-zA-Z0-9]+", "_");
+        return responsavelLimpo.isBlank()
+                ? "vistoria_" + timestamp + ".pdf"
+                : "vistoria_" + responsavelLimpo + "_" + timestamp + ".pdf";
     }
 }
