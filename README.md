@@ -8,9 +8,7 @@ Antes desse projeto, a vistoria diária era feita em papel:
 
 - Todo dia era necessário imprimir uma folha de vistoria antes de ir até a fábrica.
 - O ambiente da fábrica é sujo, e isso sujava (e às vezes danificava) o papel durante a vistoria.
-- Por ser um processo manual, era comum esquecer de anotar algum item ou setor.
-- Cada folha ficava avulsa, sem centralização, dificultando consultar vistorias antigas.
-- Havia gasto recorrente com impressão para um processo que se repetia todos os dias.
+- Havia gasto recorrente com impressão e papel para um processo que se repetia todos os dias.
 
 ## A solução
 
