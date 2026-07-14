@@ -2,6 +2,13 @@
 
 Formulário digital de vistoria de fábrica, com geração automática de relatório em PDF.
 
+<img width="811" height="918" alt="image" src="https://github.com/user-attachments/assets/a2cba91a-a9aa-4e88-b0b8-c721e6b14f8d" />
+<img width="1069" height="919" alt="image" src="https://github.com/user-attachments/assets/aae57184-7635-4447-bb6f-839a9bfc1868" />
+<img width="622" height="449" alt="image" src="https://github.com/user-attachments/assets/997c45cd-1711-4f93-936f-8722781c7a37" />
+<img width="906" height="925" alt="image" src="https://github.com/user-attachments/assets/49234963-f237-4b05-9b61-0fae6760d82c" />
+
+
+
 ## O problema
 
 Antes desse projeto, a vistoria diária era feita em papel:
