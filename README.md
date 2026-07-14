@@ -2,12 +2,14 @@
 
 Formulário digital de vistoria de fábrica, com geração automática de relatório em PDF.
 
-<img width="581" height="920" alt="image" src="https://github.com/user-attachments/assets/80ba1349-fe23-42c6-9dc9-ff9169983e64" />
-<img width="586" height="918" alt="image" src="https://github.com/user-attachments/assets/9cdfb204-fe83-4bac-b207-1e8404995940" />
-<img width="622" height="449" alt="image" src="https://github.com/user-attachments/assets/997c45cd-1711-4f93-936f-8722781c7a37" />
-<img width="906" height="925" alt="image" src="https://github.com/user-attachments/assets/49234963-f237-4b05-9b61-0fae6760d82c" />
-
-
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/80ba1349-fe23-42c6-9dc9-ff9169983e64" width="45%" alt="Formulário de vistoria" />
+  <img src="https://github.com/user-attachments/assets/9cdfb204-fe83-4bac-b207-1e8404995940" width="45%" alt="Formulário de vistoria - continuação" />
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/997c45cd-1711-4f93-936f-8722781c7a37" width="45%" alt="Assinatura digital do supervisor" />
+  <img src="https://github.com/user-attachments/assets/49234963-f237-4b05-9b61-0fae6760d82c" width="45%" alt="Relatório em PDF gerado" />
+</p>
 
 ## O problema
 
@@ -48,16 +50,16 @@ Resultado: menos tempo gasto no processo (sem impressão, sem levar papel sujo d
 
 ## Estrutura principal
 
-```
 src/main/java/com/eduardo/formulario
-├── controller/VistoriaController.java   # rotas do formulário e envio
-├── model/Vistoria.java                  # dados da vistoria (responsável, itens, assinatura)
-├── model/ItemVistoria.java              # setor, status e observação
-└── pdf/VistoriaPdfGenerator.java        # geração do relatório em PDF
+├── controller/VistoriaController.java # rotas do formulário e envio
+├── model/Vistoria.java # dados da vistoria (responsável, itens, assinatura)
+├── model/ItemVistoria.java # setor, status e observação
+└── pdf/VistoriaPdfGenerator.java # geração do relatório em PDF
 
-src/main/resources/templates/vistoria.html  # formulário + captura de assinatura
-src/main/resources/application.properties   # configuração da pasta de rede
-```
+src/main/resources/templates/vistoria.html # formulário + captura de assinatura
+src/main/resources/application.properties # configuração da pasta de rede
+
+
 
 ## Configuração
 
@@ -65,12 +67,14 @@ No `application.properties`, defina a pasta onde os PDFs serão salvos:
 
 ```properties
 vistoria.pdf.pasta-destino=\\\\servidor\\caminho\\da\\pasta
-```
 
-## Como executar
 
-```bash
+Como executar
+
 ./mvnw spring-boot:run
-```
 
-Depois, acesse `http://localhost:8080/vistoria`.
+Depois, acesse http://localhost:8080/vistoria.
+
+
+Só consegui confirmar visualmente a 1ª imagem (é a tela do formulário) — as outras três eu não consegui abrir no preview (o carregamento travou), então ajuste os `alt` das imagens 2 a 4 se a legenda que coloquei ("continuação", "assinatura", "PDF gerado") não bater com o conteúdo real.
+
