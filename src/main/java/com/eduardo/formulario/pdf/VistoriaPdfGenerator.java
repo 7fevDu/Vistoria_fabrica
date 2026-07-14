@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 
 @Service
 public class VistoriaPdfGenerator {
@@ -92,9 +93,34 @@ public class VistoriaPdfGenerator {
 
         document.add(tabela);
 
+        adicionarAssinaturaSePossivel(document, vistoria, textoFont);
+
         document.close();
 
         return saida.toByteArray();
+    }
+
+    private void adicionarAssinaturaSePossivel(Document document, Vistoria vistoria, Font textoFont) throws DocumentException {
+        String assinaturaBase64 = vistoria.getAssinaturaBase64();
+        if (assinaturaBase64 == null || assinaturaBase64.isBlank()) {
+            return;
+        }
+
+        try {
+            int virgula = assinaturaBase64.indexOf(',');
+            String dados = virgula >= 0 ? assinaturaBase64.substring(virgula + 1) : assinaturaBase64;
+            byte[] bytesImagem = Base64.getDecoder().decode(dados);
+
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph("Assinatura do Supervisor:", textoFont));
+            document.add(new Paragraph(" "));
+
+            Image assinatura = Image.getInstance(bytesImagem);
+            assinatura.scaleToFit(200, 100);
+            document.add(assinatura);
+        } catch (Exception e) {
+            // Assinatura inválida ou corrompida: segue sem ela.
+        }
     }
 
     private void adicionarLogoSePossivel(Document document) {

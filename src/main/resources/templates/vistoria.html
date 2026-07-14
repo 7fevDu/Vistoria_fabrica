@@ -146,21 +146,108 @@
             color: white;
         }
 
-        button[type="submit"] {
-            width: 100%;
+        .botoes-finais {
+            display: flex;
+            gap: 12px;
+        }
+
+        button[type="submit"],
+        .btn-assinatura {
+            flex: 1;
             padding: 16px;
             border: none;
             border-radius: var(--radius-pill);
-            background: var(--color-yellow);
-            color: var(--color-gray-dark);
             font-size: 1.05rem;
             font-weight: 700;
             cursor: pointer;
-            transition: background 0.15s ease;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        button[type="submit"] {
+            background: var(--color-yellow);
+            color: var(--color-gray-dark);
         }
 
         button[type="submit"]:hover {
             background: var(--color-yellow-dark);
+        }
+
+        .btn-assinatura {
+            background: var(--color-card);
+            color: var(--color-gray-dark);
+            border: 1.5px solid var(--color-border);
+        }
+
+        .btn-assinatura.assinado {
+            background: var(--color-ok);
+            border-color: var(--color-ok);
+            color: white;
+        }
+
+        .signature-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .signature-modal.aberto {
+            display: flex;
+        }
+
+        .signature-modal-content {
+            background: var(--color-card);
+            border-radius: var(--radius-card);
+            padding: 20px;
+            width: 100%;
+            max-width: 560px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .signature-modal-content h3 {
+            margin: 0;
+        }
+
+        .signature-modal-content p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--color-muted);
+        }
+
+        #signatureCanvas {
+            width: 100%;
+            height: 220px;
+            border: 1.5px dashed var(--color-border);
+            border-radius: var(--radius-field);
+            background: #fafafa;
+            touch-action: none;
+        }
+
+        .signature-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .signature-actions button {
+            flex: 1;
+            padding: 12px;
+            border-radius: var(--radius-pill);
+            border: 1.5px solid var(--color-border);
+            background: var(--color-card);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .signature-actions .confirmar {
+            background: var(--color-yellow);
+            border-color: var(--color-yellow);
+            color: var(--color-gray-dark);
         }
     </style>
 </head>
@@ -172,7 +259,7 @@
         <h1>Formulário de Vistoria Fábrica</h1>
     </header>
 
-    <form th:action="@{/vistoria}" th:object="${vistoria}" method="post">
+    <form id="formVistoria" th:action="@{/vistoria}" th:object="${vistoria}" method="post">
 
         <div class="card">
             <label for="responsavel">Responsável</label>
@@ -197,8 +284,126 @@
             <textarea th:field="*{itens[__${stat.index}__].observacao}" placeholder="Observação (se houver incidente)"></textarea>
         </div>
 
-        <button type="submit">Enviar</button>
+        <input type="hidden" id="assinaturaInput" th:field="*{assinaturaBase64}">
+
+        <div class="botoes-finais">
+            <button type="button" id="btnAssinatura" class="btn-assinatura">Assinatura</button>
+            <button type="submit">Enviar</button>
+        </div>
     </form>
 </div>
+
+<div id="signatureModal" class="signature-modal">
+    <div class="signature-modal-content">
+        <h3>Assinatura do Supervisor</h3>
+        <p>Peça para o supervisor desenhar a assinatura no espaço abaixo.</p>
+        <canvas id="signatureCanvas"></canvas>
+        <div class="signature-actions">
+            <button type="button" id="limparAssinatura">Limpar</button>
+            <button type="button" id="cancelarAssinatura">Cancelar</button>
+            <button type="button" id="confirmarAssinatura" class="confirmar">Confirmar</button>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    (function () {
+        const modal = document.getElementById('signatureModal');
+        const canvas = document.getElementById('signatureCanvas');
+        const ctx = canvas.getContext('2d');
+        const btnAssinatura = document.getElementById('btnAssinatura');
+        const btnLimpar = document.getElementById('limparAssinatura');
+        const btnCancelar = document.getElementById('cancelarAssinatura');
+        const btnConfirmar = document.getElementById('confirmarAssinatura');
+        const input = document.getElementById('assinaturaInput');
+        const form = document.getElementById('formVistoria');
+
+        let desenhando = false;
+        let temTraço = false;
+
+        function ajustarCanvas() {
+            const proporcao = window.devicePixelRatio || 1;
+            const largura = canvas.clientWidth;
+            const altura = canvas.clientHeight;
+            canvas.width = largura * proporcao;
+            canvas.height = altura * proporcao;
+            ctx.scale(proporcao, proporcao);
+            ctx.lineWidth = 2.5;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = '#1f1f1f';
+        }
+
+        function posicao(evento) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: evento.clientX - rect.left,
+                y: evento.clientY - rect.top
+            };
+        }
+
+        function iniciarTraço(evento) {
+            desenhando = true;
+            temTraço = true;
+            const p = posicao(evento);
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+        }
+
+        function desenhar(evento) {
+            if (!desenhando) return;
+            const p = posicao(evento);
+            ctx.lineTo(p.x, p.y);
+            ctx.stroke();
+        }
+
+        function pararTraço() {
+            desenhando = false;
+        }
+
+        canvas.addEventListener('pointerdown', iniciarTraço);
+        canvas.addEventListener('pointermove', desenhar);
+        canvas.addEventListener('pointerup', pararTraço);
+        canvas.addEventListener('pointerleave', pararTraço);
+
+        function limparCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            temTraço = false;
+        }
+
+        function abrirModal() {
+            modal.classList.add('aberto');
+            ajustarCanvas();
+            limparCanvas();
+        }
+
+        function fecharModal() {
+            modal.classList.remove('aberto');
+        }
+
+        btnAssinatura.addEventListener('click', abrirModal);
+        btnCancelar.addEventListener('click', fecharModal);
+        btnLimpar.addEventListener('click', limparCanvas);
+
+        btnConfirmar.addEventListener('click', function () {
+            if (!temTraço) {
+                alert('Peça para o supervisor desenhar a assinatura antes de confirmar.');
+                return;
+            }
+            input.value = canvas.toDataURL('image/png');
+            btnAssinatura.textContent = 'Assinatura ✓';
+            btnAssinatura.classList.add('assinado');
+            fecharModal();
+        });
+
+        form.addEventListener('submit', function (evento) {
+            if (!input.value) {
+                evento.preventDefault();
+                alert('É necessário coletar a assinatura do supervisor antes de enviar.');
+                abrirModal();
+            }
+        });
+    })();
+</script>
 </body>
 </html>
