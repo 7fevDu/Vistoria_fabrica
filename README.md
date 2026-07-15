@@ -69,3 +69,13 @@ vistoria.pdf.pasta-destino=\\\\servidor\\caminho\\da\\pasta
 ```
 
 Depois, acesse `http://localhost:8080/vistoria`.
+
+### Acessando pelo celular
+
+A aplicação escuta em todas as interfaces de rede (`server.address=0.0.0.0`), então dá para abrir o formulário direto do celular/tablet, desde que esteja na **mesma rede Wi-Fi** do computador que está rodando o servidor.
+
+1. Descubra o IP local do computador que está rodando a aplicação:
+   - Windows: `ipconfig` (veja o campo `Endereço IPv4`, algo como `192.168.x.x`)
+   - Linux/Mac: `ifconfig` ou `ip addr`
+2. No celular, abra o navegador e acesse `http://<IP-DO-COMPUTADOR>:8080/vistoria` (ex.: `http://192.168.1.93:8080/vistoria`).
+3. Se não conectar, verifique se o Firewall do Windows está bloqueando a porta 8080 (pode ser necessário liberar entrada TCP na porta 8080 para a rede privada).
