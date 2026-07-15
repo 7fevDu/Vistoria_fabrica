@@ -2,15 +2,22 @@
 
 Formulário digital de vistoria de fábrica, com geração automática de relatório em PDF.
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/80ba1349-fe23-42c6-9dc9-ff9169983e64" width="45%" alt="Formulário de vistoria" />
+  <img src="https://github.com/user-attachments/assets/9cdfb204-fe83-4bac-b207-1e8404995940" width="45%" alt="Formulário de vistoria - continuação" />
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/997c45cd-1711-4f93-936f-8722781c7a37" width="45%" alt="Assinatura digital do supervisor" />
+  <img src="https://github.com/user-attachments/assets/49234963-f237-4b05-9b61-0fae6760d82c" width="45%" alt="Relatório em PDF gerado" />
+</p>
+
 ## O problema
 
 Antes desse projeto, a vistoria diária era feita em papel:
 
 - Todo dia era necessário imprimir uma folha de vistoria antes de ir até a fábrica.
 - O ambiente da fábrica é sujo, e isso sujava (e às vezes danificava) o papel durante a vistoria.
-- Por ser um processo manual, era comum esquecer de anotar algum item ou setor.
-- Cada folha ficava avulsa, sem centralização, dificultando consultar vistorias antigas.
-- Havia gasto recorrente com impressão para um processo que se repetia todos os dias.
+- Havia gasto recorrente com impressão e papel para um processo que se repetia todos os dias.
 
 ## A solução
 
