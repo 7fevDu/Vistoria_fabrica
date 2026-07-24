@@ -41,8 +41,12 @@ public class VistoriaPdfGenerator {
         PdfWriter.getInstance(document, saida);
         document.open();
 
-        BaseFont baseFont = BaseFont.createFont("C:/Windows/Fonts/calibri.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        BaseFont baseFontBold = BaseFont.createFont("C:/Windows/Fonts/calibrib.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        BaseFont baseFont = criarFonteBase(
+                "C:/Windows/Fonts/calibri.ttf",
+                "/usr/share/fonts/truetype/crosextra-carlito/Carlito-Regular.ttf");
+        BaseFont baseFontBold = criarFonteBase(
+                "C:/Windows/Fonts/calibrib.ttf",
+                "/usr/share/fonts/truetype/crosextra-carlito/Carlito-Bold.ttf");
 
         Font tituloFont = new Font(baseFontBold, 20, Font.NORMAL, CINZA_ESCURO);
         Font subtituloFont = new Font(baseFont, 10, Font.NORMAL, new Color(107, 107, 107));
@@ -98,6 +102,15 @@ public class VistoriaPdfGenerator {
         document.close();
 
         return saida.toByteArray();
+    }
+
+    private BaseFont criarFonteBase(String... caminhosCandidatos) throws DocumentException, IOException {
+        for (String caminho : caminhosCandidatos) {
+            if (new java.io.File(caminho).isFile()) {
+                return BaseFont.createFont(caminho, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            }
+        }
+        return BaseFont.createFont(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.NOT_EMBEDDED);
     }
 
     private void adicionarAssinaturaSePossivel(Document document, Vistoria vistoria, Font textoFont) throws DocumentException {

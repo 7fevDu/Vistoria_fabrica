@@ -4,6 +4,8 @@ import com.eduardo.formulario.model.ItemVistoria;
 import com.eduardo.formulario.model.Vistoria;
 import com.eduardo.formulario.pdf.VistoriaPdfGenerator;
 import com.lowagie.text.DocumentException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -23,6 +25,8 @@ import java.util.List;
 
 @Controller
 public class VistoriaController {
+
+    private static final Logger log = LoggerFactory.getLogger(VistoriaController.class);
 
     private static final List<String> SETORES = List.of(
             "Batch off & Embalagem",
@@ -54,8 +58,12 @@ public class VistoriaController {
         byte[] pdf = pdfGenerator.gerar(vistoria);
 
         String nomeArquivo = nomeArquivo(vistoria);
-        Files.createDirectories(Path.of(pastaDestino));
-        Files.write(Path.of(pastaDestino, nomeArquivo), pdf);
+        try {
+            Files.createDirectories(Path.of(pastaDestino));
+            Files.write(Path.of(pastaDestino, nomeArquivo), pdf);
+        } catch (IOException e) {
+            log.warn("Nao foi possivel salvar o PDF na pasta de rede ({}). O download ainda sera oferecido ao usuario.", pastaDestino, e);
+        }
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + nomeArquivo)
